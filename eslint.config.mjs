@@ -1,14 +1,41 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+import nextPlugin from "@next/eslint-plugin-next";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const nextRecommended = nextPlugin.configs.recommended;
+const nextCoreWeb = nextPlugin.configs["core-web-vitals"];
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
-const eslintConfig = [...compat.extends("next/core-web-vitals")];
-
-export default eslintConfig;
+export default [
+  {
+    ignores: ["**/node_modules/**", ".next/**"],
+  },
+  {
+    plugins: {
+      "@next/next": nextPlugin,
+    },
+    rules: {
+      ...nextRecommended.rules,
+      ...nextCoreWeb.rules,
+    },
+    languageOptions: {
+      ...nextRecommended.languageOptions,
+      ...nextCoreWeb.languageOptions,
+      ecmaVersion: "latest",
+      sourceType: "module",
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+        ecmaFeatures: { jsx: true },
+        ...nextRecommended.languageOptions?.parserOptions,
+        ...nextCoreWeb.languageOptions?.parserOptions,
+      },
+    },
+    linterOptions: {
+      ...nextRecommended.linterOptions,
+      ...nextCoreWeb.linterOptions,
+    },
+    settings: {
+      ...nextRecommended.settings,
+      ...nextCoreWeb.settings,
+      next: { rootDir: ["./"] },
+    },
+  },
+];
